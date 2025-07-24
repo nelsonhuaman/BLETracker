@@ -19,6 +19,9 @@ fun LoginScreen(
 ) {
     val dni by viewModel.dni.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
+    val isDniValid = viewModel.isDniValid()
+
+
 
     Column(
         modifier = Modifier
@@ -39,7 +42,14 @@ fun LoginScreen(
             },
             label = { Text("DNI") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                cursorColor = MaterialTheme.colorScheme.primary
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -51,7 +61,8 @@ fun LoginScreen(
                         popUpTo(NavigationRoutes.LOGIN_SCREEN) { inclusive = true }
                     }
                 }
-            }
+            },
+            enabled = isDniValid
         ) {
             Text("Continuar")
         }

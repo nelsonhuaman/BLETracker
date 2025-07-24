@@ -22,9 +22,6 @@ class LoginViewModel @Inject constructor(
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
 
-    fun onDniChanged(newDni: String) {
-        _dni.value = newDni
-    }
 
     fun registrarUsuario(onSuccess: () -> Unit) {
         val currentDni = _dni.value.trim()
@@ -45,5 +42,14 @@ class LoginViewModel @Inject constructor(
 
     fun clearError() {
         _errorMessage.value = null
+    }
+
+    fun isDniValid(): Boolean {
+        return dni.value.length == 8 && dni.value.all { it.isDigit() }
+    }
+    fun onDniChanged(input: String) {
+        if (input.length <= 8 && input.all { it.isDigit() }) {
+            _dni.value = input
+        }
     }
 }

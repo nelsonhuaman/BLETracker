@@ -36,6 +36,9 @@ class ContactTracingService : Service() {
     private var uuidUsuario: String = ""
     private val mejoresContactos = mutableMapOf<String, ContactoCercano>()
 
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
+
     override fun onCreate() {
         super.onCreate()
 
@@ -47,7 +50,7 @@ class ContactTracingService : Service() {
         advertiser = bluetoothAdapter.bluetoothLeAdvertiser
         scanner = bluetoothAdapter.bluetoothLeScanner
 
-        CoroutineScope(Dispatchers.IO).launch {
+        serviceScope.launch {
             try {
                 uuidUsuario = userPreferences.obtenerUuid.first()
 
@@ -72,8 +75,8 @@ class ContactTracingService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Asegura que el servicio se reinicie si es terminado por el sistema
-        return START_STICKY
+        Log.d("BLE", "▶️ Servicio iniciado manualmente")
+        return START_NOT_STICKY
     }
 
     override fun onDestroy() {
@@ -89,6 +92,7 @@ class ContactTracingService : Service() {
         ) {
             detenerEscaneo()
         }
+        serviceScope.cancel()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
